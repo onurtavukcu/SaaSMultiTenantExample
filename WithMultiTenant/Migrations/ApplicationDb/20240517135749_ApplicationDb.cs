@@ -3,10 +3,10 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace WithMultiTenant.Migrations
+namespace WithMultiTenant.Migrations.ApplicationDb
 {
     /// <inheritdoc />
-    public partial class initial : Migration
+    public partial class ApplicationDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -25,18 +25,6 @@ namespace WithMultiTenant.Migrations
                 {
                     table.PrimaryKey("PK_Products", x => x.Id);
                 });
-
-            migrationBuilder.CreateTable(
-                name: "Tenants",
-                columns: table => new
-                {
-                    Id = table.Column<string>(type: "text", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Tenants", x => x.Id);
-                });
         }
 
         /// <inheritdoc />
@@ -44,9 +32,6 @@ namespace WithMultiTenant.Migrations
         {
             migrationBuilder.DropTable(
                 name: "Products");
-
-            migrationBuilder.DropTable(
-                name: "Tenants");
         }
     }
 }

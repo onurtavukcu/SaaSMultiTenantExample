@@ -13,6 +13,7 @@ namespace WithMultiTenant.Services
             _context = context;
         }
         public string? TenantId { get; set; }
+        public string? ConnectionString { get; set; }
 
         public async Task<bool> SetTenant(string tenant)
         {
@@ -21,6 +22,7 @@ namespace WithMultiTenant.Services
             if (tenantInfo != null) 
             {
                 TenantId = tenantInfo.Id;
+                ConnectionString = tenantInfo.ConnectionString;
                 return true;
             }
             else

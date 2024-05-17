@@ -2,8 +2,11 @@
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using WithMultiTenant.DbContextModel;
+using WithMultiTenant.Extensions;
 using WithMultiTenant.MiddleWare;
 using WithMultiTenant.Services;
+using WithMultiTenant.Services.TenantService;
+using WithMultiTenant.Tenants;
 
 namespace WithMultiTenant
 {
@@ -16,12 +19,11 @@ namespace WithMultiTenant
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
 
-            builder.Services.AddTransient<IProductService, ProductService>();
+            builder.Services.AddEndpointsApiExplorer();
+            
             builder.Services.AddScoped<ICurrentTenantService, CurrentTenantService>();
+
 
             builder.Services.AddDbContext<ApplicationDbContext>
                 (
@@ -43,14 +45,13 @@ namespace WithMultiTenant
                 )
                );
 
-            var app = builder.Build();
+            builder.Services.AddAndMigrateTenantDatabases(builder.Configuration);
 
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
+            builder.Services.AddTransient<IProductService, ProductService>();
+            builder.Services.AddTransient<ITenantService, TenantService>();
+
+
+            var app = builder.Build();
 
             app.UseHttpsRedirection();
 

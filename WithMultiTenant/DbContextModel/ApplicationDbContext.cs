@@ -9,18 +9,29 @@ namespace WithMultiTenant.DbContextModel
     {
         public readonly ICurrentTenantService _currentTenantService;
         public string CurrentTenantId;
+        public string CurrentTenantConnectionString;
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options, ICurrentTenantService currentTenantService) : base(options)
         {
             _currentTenantService = currentTenantService;
             CurrentTenantId = _currentTenantService.TenantId;
+            CurrentTenantConnectionString = _currentTenantService.ConnectionString;
         }
 
         public DbSet<Product> Products { get; set; }
-        public DbSet<Tenant> Tenants { get; set; }
-
+        
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Product>().HasQueryFilter(x => x.TenantId == CurrentTenantId);
+        }
+
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            string tenantConnectionString = CurrentTenantConnectionString;
+
+            if (!string.IsNullOrEmpty(tenantConnectionString))
+            {
+                _ = optionsBuilder.UseNpgsql(tenantConnectionString);
+            }
         }
 
         public override int SaveChanges()
